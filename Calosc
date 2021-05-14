@@ -1,0 +1,195 @@
+# SAMA FUNKCJA
+
+def pokasz_mapkie(gdf, kolumna, tytul_wykresu):
+    
+    gdf.plot(kolumna, legend=True, cmap = 'jet')
+    plt.title(tytul_wykresu)
+    wykresik1 = tytul_wykresu+'--1.jpg'
+    plt.savefig(wykresik1)
+    gdf['centroid']=gdf.centroid
+
+    xmin, ymin, xmax, ymax = [13, 48, 25, 56]
+    n_cells = 30
+    cell_size = (xmax-xmin)/n_cells
+
+    grid_cells = []
+    for x0 in np.arange(xmin, xmax+cell_size, cell_size):
+        for y0 in np.arange(ymin, ymax+cell_size, cell_size):
+            x1 = x0-cell_size
+            y1 = y0+cell_size
+            grid_cells.append(shapely.geometry.box(x0, y0, x1, y1))
+
+    cell = gpd.GeoDataFrame(grid_cells, columns=['geometry'])
+    ax = gdf.plot(markersize = 0.1, figsize=(10,8), column = kolumna, cmap="jet")
+
+    plt.autoscale(False)
+    cell.plot(ax=ax, facecolor = "none", edgecolor = 'grey')
+    ax.axis("off")
+    plt.title(tytul_wykresu)
+    wykresik2 = tytul_wykresu+'--2.jpg'
+    plt.savefig(wykresik2)
+
+    merged = gpd.sjoin(gdf, cell, how='left', op = 'within')
+
+    dissolve = merged.dissolve(by="index_right", aggfunc = "sum")
+    print(dissolve)
+
+    # TOT, TOT_0_14, TOT_15_64, TOT_65__, TOT_MALE
+    # TOT_FEM, MALE_0_14 ,MALE_15_64, MALE_65__, FEM_0_14
+    # FEM_15_64, FEM_65__, FEM_RATIO, SHAPE_Leng, SHAPE_Area, CODE
+    
+    # Pętla wyboru kolumny
+    
+    if kolumna == 'TOT':
+        cell.loc[dissolve.index, kolumna]=dissolve.TOT.values
+        maksimum = max(gdf.TOT)
+    elif kolumna == 'TOT_0_14':
+        cell.loc[dissolve.index, kolumna]=dissolve.TOT_0_14.values
+        maksimum = max(gdf.TOT_0_14)
+        
+    elif kolumna == 'TOT_15_64':
+        cell.loc[dissolve.index, kolumna]=dissolve.TOT_15_64.values
+        maksimum = max(gdf.TOT_15_64)
+        
+    elif kolumna == 'TOT_65__':
+        cell.loc[dissolve.index, kolumna]=dissolve.TOT_65__.values
+        maksimum = max(gdf.TOT_65__)
+        
+    elif kolumna == 'TOT_MALE':
+        cell.loc[dissolve.index, kolumna]=dissolve.TOT_MALE.values
+        maksimum = max(gdf.TOT_MALE)
+        
+    elif kolumna == 'TOT_FEM':
+        cell.loc[dissolve.index, kolumna]=dissolve.TOT_FEMALE.values
+        maksimum = max(gdf.TOT_FEMALE)
+        
+    elif kolumna == 'MALE_0_14':
+        cell.loc[dissolve.index, kolumna]=dissolve.MALE_0_14.values
+        maksimum = max(gdf.MALE_0_14)
+        
+    elif kolumna == 'MALE_15_64':
+        cell.loc[dissolve.index, kolumna]=dissolve.MALE_15_64.values
+        maksimum = max(gdf.MALE_15_64)
+        
+    elif kolumna == 'MALE_65__':
+        cell.loc[dissolve.index, kolumna]=dissolve.MALE_65__.values
+        maksimum = max(gdf.MALE_65__)
+        
+    elif kolumna == 'FEM_0_14':
+        cell.loc[dissolve.index, kolumna]=dissolve.FEM_0_14.values
+        maksimum = max(gdf.FEM_0_14)
+
+    elif kolumna == 'FEM_15_64':
+        cell.loc[dissolve.index, kolumna]=dissolve.FEM_15_64.values
+        maksimum = max(gdf.FEM_15_64)
+
+    elif kolumna == 'FEM_65__':
+        cell.loc[dissolve.index, kolumna]=dissolve.FEM_65__.values
+        maksimum = max(gdf.FEM_65__)
+
+    elif kolumna == 'FEM_RATIO':
+        cell.loc[dissolve.index, kolumna]=dissolve.FEMFEM_RATIO.values
+        maksimum = max(gdf.FEM_RATIO)
+
+    else:
+        print('NIEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE')
+
+    # Koniec pętli wyboru kolumny
+        
+    ax = cell.plot(column=kolumna, figsize=(10, 8), cmap='jet', vmax = 70000, edgecolor="grey", legend = True)
+    plt.autoscale(False)
+    ax.set_axis_off()
+    plt.axis('equal')
+    plt.title(tytul_wykresu)
+    wykresik3 = tytul_wykresu+'--3.jpg'
+    plt.savefig(wykresik3)
+    return()
+#############################################################################
+# SAMA FUNKCJA
+# Nie do końca wiemy jak to zrobić
+
+def pokasz_mapkie_ale_ta_druga(gdf, gdw, kolumna, tytul_wykresu):
+
+    gdw.plot(legend=True)
+    cell = gdw.GeoDataFrame(gdw, columns=['geometry'])
+    ax=gdf.plot(markersize=.1, figsize=(12, 8), column='FEM_RATIO', cmap='jet')
+
+    plt.autoscale(False)
+    cell.plot(ax=ax, facecolor="none", edgecolor='grey')
+    ax.axis("on")
+    plt.title('wojewodztwa')
+    
+    gdf.plot(kolumna, legend=True, cmap = 'jet')
+    plt.title(tytul_wykresu)
+    wykresik1 = tytul_wykresu+'--1.jpg'
+    plt.savefig(wykresik1)
+    gdf['centroid']=gdf.centroid
+
+    cell = gdw.GeoDataFrame(cells, columns=['geometry'])
+    ax = gdf.plot(markersize = 0.1, figsize=(10,8), column = kolumna, cmap="jet")
+
+    plt.autoscale(False)
+    cell.plot(ax=ax, facecolor = "none", edgecolor = 'grey')
+    ax.axis("off")
+    plt.title(tytul_wykresu)
+    wykresik2 = tytul_wykresu+'--2.jpg'
+    plt.savefig(wykresik2)
+
+    merged = gpd.sjoin(gdf, cell, how='left', op = 'within')
+
+    dissolve = merged.dissolve(by="index_right", aggfunc = "sum")
+
+    # TOT, TOT_0_14, TOT_15_64, TOT_65__, TOT_MALE
+    # TOT_FEM, MALE_0_14 ,MALE_15_64, MALE_65__, FEM_0_14
+    # FEM_15_64, FEM_65__, FEM_RATIO, SHAPE_Leng, SHAPE_Area, CODE
+    
+    # Pętla wyboru kolumny
+    
+    
+
+    # Koniec pętli wyboru kolumny
+        
+    ax = cell.plot(column=kolumna, figsize=(10, 8), cmap='jet', vmax = 70000, edgecolor="grey", legend = True)
+    plt.autoscale(False)
+    ax.set_axis_off()
+    plt.axis('equal')
+    plt.title(tytul_wykresu)
+    wykresik3 = tytul_wykresu+'--3.jpg'
+    plt.savefig(wykresik3)
+    return()
+####################################################################################
+
+import geopandas as gpd
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import shapely
+
+# Nazwy kolumn
+
+# TOT, TOT_0_14, TOT_15_64, TOT_65__, TOT_MALE
+# TOT_FEM, MALE_0_14 ,MALE_15_64, MALE_65__, FEM_0_14
+# FEM_15_64, FEM_65__, FEM_RATIO, SHAPE_Leng, SHAPE_Area, CODE
+
+gdf = gpd.read_file('PD_STAT_GRID_CELL_2011.shp')
+plik = gdf.to_crs("EPSG:4326")
+gdw=gpd.read_file('Województwa.shp')
+gdw=gdw.to_crs("EPSG:4326")
+
+#####Wyznacz liczbę ludności w siatce dla:
+#a) Przedziału wiekowego 0-14
+pokasz_mapkie(plik, 'TOT_0_14', 'TOT_0_14')
+#b) Przedziału wiekowego 15-64
+pokasz_mapkie(plik, 'TOT_15_64', 'TOT_15_64')
+#c) Przedziału wiekowego >65
+pokasz_mapkie(plik, 'TOT_65__', 'TOT_65__')
+#d) Ludności męskiej w przedziałach wiekowych z podpunktów a-c
+pokasz_mapkie(plik, 'MALE_0_14', 'MALE_0_14')
+pokasz_mapkie(plik, 'MALE_15_64', 'MALE_15_64')
+pokasz_mapkie(plik, 'MALE_65__', 'MALE_65__')
+#e) Ludności żeńskiej w przedziałach wiekowych z podpunktów a-c
+pokasz_mapkie(plik, 'FEM_0_14', 'FEM_0_14')
+pokasz_mapkie(plik, 'FEM_15_64', 'FEM_15_64')
+pokasz_mapkie(plik, 'FEM_65__', 'FEM_65__')
+#f) Ratio liczby ludności do powierzchni dla danego województwa
+pokasz_mapkie_ale_ta_druga(plik, gdw, 'FEM_RATIO', 'FEM_RATIO')
