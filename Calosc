@@ -1,5 +1,4 @@
 # SAMA FUNKCJA
-
 def pokasz_mapkie(gdf, kolumna, tytul_wykresu):
     
     gdf.plot(kolumna, legend=True, cmap = 'jet')
